@@ -4,7 +4,7 @@ A tool that automates s4u2self abuse to gain access to remote hosts
 Run as follows:
 
 ```
-iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/Leo4j/Invoke-SessionHunter/main/Invoke-s4u2self.ps1')
+iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/Leo4j/Invoke-s4u2self/main/Invoke-s4u2self.ps1')
 ```
 
 ### SMBRemoting
