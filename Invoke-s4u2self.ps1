@@ -212,6 +212,7 @@ Enter-PSSession -ComputerName $FQDNHostname
 	Write-Output ""
 	Write-Output "Attempting to access the remote machine..."
 	Write-Output ""
+ 	Remove-Item -Path C:\Users\Public\Documents\comm.txt
 }
 
 function Get-Domain {
