@@ -85,7 +85,7 @@ function Invoke-s4u2self {
 		[String]
 		$Impersonate,
 		
-		[Parameter (Mandatory=$True, ValueFromPipeline=$true)]
+		[Parameter (Mandatory=$False, ValueFromPipeline=$true)]
 		[String]
 		$Server,
 		
